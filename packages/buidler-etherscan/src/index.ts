@@ -91,16 +91,14 @@ Reason: ${error.message}`,
     constructorArguments = constructorArgsList;
   }
 
-  let etherscanAPIEndpoint: URL;
-  const {
-    getEtherscanEndpoint,
-    retrieveContractBytecode,
-    NetworkProberError,
-  } = await import("./network/prober");
+  let etherscanAPIEndpoint: string;
+  const { getEtherscanEndpoint, retrieveContractBytecode } = await import(
+    "./network/prober"
+  );
   try {
     etherscanAPIEndpoint = await getEtherscanEndpoint(network.provider);
   } catch (error) {
-    if (error instanceof NetworkProberError) {
+    if (error instanceof NomicLabsBuidlerPluginError) {
       throw new NomicLabsBuidlerPluginError(
         pluginName,
         `${error.message} The selected network is ${network.name}.

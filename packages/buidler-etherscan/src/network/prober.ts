@@ -1,4 +1,4 @@
-import { BuidlerPluginError } from "@nomiclabs/buidler/plugins";
+import { NomicLabsBuidlerPluginError } from "@nomiclabs/buidler/plugins";
 import { EthereumProvider } from "@nomiclabs/buidler/types";
 
 import { pluginName } from "../pluginContext";
@@ -24,34 +24,27 @@ const networkIDtoEndpoint: NetworkMap = {
   [NetworkID.KOVAN]: "https://api-kovan.etherscan.io/api",
 };
 
-export class NetworkProberError extends BuidlerPluginError {
-  constructor(message: string) {
-    super(pluginName, message);
-  }
-}
-
 export async function getEtherscanEndpoint(provider: EthereumProvider) {
-  const chainID = parseInt(await provider.send("eth_chainId"), 16) as NetworkID;
+  const chainID: NetworkID = parseInt(await provider.send("eth_chainId"), 16);
 
   const endpoint = networkIDtoEndpoint[chainID];
-  if (endpoint !== null && endpoint !== undefined) {
-    // Beware: this delays URL validation until it is effectively "used".
-    // Tests should take this into account.
-    return new URL(endpoint);
+  if (typeof endpoint !== "string") {
+    throw new NomicLabsBuidlerPluginError(
+      pluginName,
+      `An etherscan endpoint could not be found for this network. ChainID: ${chainID}`
+    );
   }
-  throw new NetworkProberError(
-    `An etherscan endpoint could not be found for this network. ChainID: ${chainID}`
-  );
+  return endpoint;
 }
 
 export async function retrieveContractBytecode(
   address: string,
   provider: EthereumProvider
 ) {
-  const bytecodeString = (await provider.send("eth_getCode", [
+  const bytecodeString: string = await provider.send("eth_getCode", [
     address,
     "latest",
-  ])) as string;
+  ]);
   const deployedBytecode = bytecodeString.startsWith("0x")
     ? bytecodeString.slice(2)
     : bytecodeString;

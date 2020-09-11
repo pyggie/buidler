@@ -15,7 +15,7 @@ export async function delay(ms: number): Promise<void> {
 const verificationIntervalMs = 3000;
 
 export async function verifyContract(
-  url: URL,
+  url: string,
   req: EtherscanVerifyRequest
 ): Promise<EtherscanResponse> {
   const { default: fetch } = await import("node-fetch");
@@ -57,34 +57,36 @@ Reason: ${error.message}`,
 }
 
 export async function getVerificationStatus(
-  url: URL,
+  url: string,
   req: EtherscanCheckStatusRequest
 ): Promise<EtherscanResponse> {
   const parameters = new URLSearchParams({ ...req });
-  const urlWithQuery = new URL("", url);
+  const urlWithQuery = new URL(url);
   urlWithQuery.search = parameters.toString();
+  const genericErrorMessage = `Failure during etherscan status polling. The verification may still succeed but
+should be checked manually.
+Endpoint URL: ${urlWithQuery}
+Reason:`;
 
   const { default: fetch } = await import("node-fetch");
   let response;
   try {
     response = await fetch(urlWithQuery);
-
-    if (!response.ok) {
-      // This could be always interpreted as JSON if there were any such guarantee in the Etherscan API.
-      const responseText = await response.text();
-      const message = `The HTTP server response is not ok. Status code: ${response.status} Response text: ${responseText}`;
-
-      throw new NomicLabsBuidlerPluginError(pluginName, message);
-    }
   } catch (error) {
     throw new NomicLabsBuidlerPluginError(
       pluginName,
-      `Failure during etherscan status polling. The verification may still succeed but
-should be checked manually.
-Endpoint URL: ${urlWithQuery}
-Reason: ${error.message}`,
+      `${genericErrorMessage} ${error.message}`,
       error
     );
+  }
+
+  // At this point we know there was a server response.
+  if (!response.ok) {
+    // This could be always interpreted as JSON if there were any such guarantee in the Etherscan API.
+    const responseText = await response.text();
+    const message = `${genericErrorMessage} The HTTP server response is not ok. Status code: ${response.status} Response text: ${responseText}`;
+
+    throw new NomicLabsBuidlerPluginError(pluginName, message);
   }
 
   const etherscanResponse = new EtherscanResponse(await response.json());
