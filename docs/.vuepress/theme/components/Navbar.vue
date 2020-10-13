@@ -34,8 +34,7 @@
               'max-width': linksWrapMaxWidth + 'px'
             }"
           >
-            <AlgoliaSearchBox v-if="isAlgoliaSearch" :options="algolia" />
-            <SearchBox v-else-if="$page.frontmatter.search !== false" />
+            <SearchBox v-if="$page.frontmatter.search !== false" />
             <NavLinks class="can-hide" />
           </div>
         </header>
@@ -46,12 +45,11 @@
 
 <script>
 import SidebarButton from "./SidebarButton.vue";
-import AlgoliaSearchBox from "./AlgoliaSearchBox.vue";
 import SearchBox from "./SearchBox.vue";
 import NavLinks from "./NavLinks.vue";
 
 export default {
-  components: { SidebarButton, NavLinks, SearchBox, AlgoliaSearchBox },
+  components: { SidebarButton, NavLinks, SearchBox },
 
   data() {
     return {

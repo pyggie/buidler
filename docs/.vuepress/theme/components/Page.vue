@@ -201,18 +201,19 @@ function find (page, items, offset) {
 @require '../styles/wrapper.styl'
 
 .page
-  padding-bottom 2rem
+  padding-bottom 2rem !important
 
 .page-edit
   @extend $wrapper
-  padding-top 1rem
-  padding-bottom 1rem
+  padding-top 1rem !important
+  padding-bottom 1rem !important
   overflow auto
+  margin 0 auto !important
   .edit-link
     display inline-block
     a
       color lighten($textColor, 25%)
-      margin-right 0.25rem
+      margin-right 0.25rem !important
   .last-updated
     float right
     font-size 0.9em
@@ -225,11 +226,12 @@ function find (page, items, offset) {
 
 .page-nav
   @extend $wrapper
-  padding-top 1rem
-  padding-bottom 0
+  margin 0 auto !important
+  padding-top 1rem  !important
+  padding-bottom 0  !important
   .inner
-    min-height 2rem
-    margin-top 0
+    min-height 2rem  !important
+    margin-top 0  !important
     border-top 1px solid $borderColor
     padding-top 1rem
     overflow auto // clear float
@@ -239,10 +241,12 @@ function find (page, items, offset) {
 @media (max-width: $MQMobile)
   .page-edit
     .edit-link
-      margin-bottom .5rem
+      margin-bottom .5rem !important
     .last-updated
       font-size .8em
       float none
       text-align left
 
 </style>
+
+
